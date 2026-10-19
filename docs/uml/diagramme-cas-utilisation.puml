@@ -1,0 +1,40 @@
+
+@startuml
+
+title Plateforme de gestion des PFA\nDiagramme des cas d'utilisation
+
+left to right direction
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+actor "Étudiant" as Etudiant
+actor "Enseignant" as Enseignant
+actor "Administration" as Admin
+
+rectangle "Plateforme de gestion des PFA" {
+
+  usecase "UC01\nGérer une campagne PFA" as UC01
+
+  usecase "UC02\nPublier et gérer les sujets" as UC02
+
+  usecase "UC03\nProposer un projet personnel" as UC03
+
+  usecase "UC04\nConsulter les sujets et\n déposer une candidature" as UC04
+
+  usecase "UC05\nExaminer et traiter\nles candidatures" as UC05
+
+  usecase "UC06\nValider une affectation" as UC06
+}
+
+Admin -- UC01
+
+Enseignant -- UC02
+Enseignant -- UC05
+Enseignant -- UC06
+
+Etudiant -- UC03
+Etudiant -- UC04
+
+@enduml
