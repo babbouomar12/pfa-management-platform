@@ -1,0 +1,77 @@
+@startuml
+' TP1 — Processus unifié et approches agiles
+' Plateforme de gestion des PFA — UC06
+' Diagramme de composants : conception, sans implémentation
+
+!pragma layout smetana
+
+title UC06 — Architecture logique en composants
+
+top to bottom direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam packageStyle rectangle
+skinparam ArrowColor #53585B
+skinparam ArrowThickness 1.5
+skinparam component {
+  BackgroundColor #FAF9F7
+  BorderColor #33393A
+  FontColor #202626
+}
+skinparam package {
+  BorderColor #858C8D
+  FontColor #353B3B
+}
+skinparam database {
+  BackgroundColor #F4F1EB
+  BorderColor #33393A
+}
+
+package "Présentation" #F7F7F5 {
+  component "Interface enseignant" as UI
+}
+
+package "Couche API" #F7F7F5 {
+  component "Contrôleur d'affectation" as CTRL
+}
+
+package "Couche métier" #F7F7F5 {
+  component "Service d'affectation" as SERVICE
+  component "Règles de validation UC06" as REGLES
+}
+
+package "Persistance" #F7F7F5 {
+  component "Dépôt d'affectation\n(Repository)" as REPO
+  database "Base de données\nrelationnelle" as DB
+}
+
+UI -down-> CTRL : demande de confirmation
+CTRL -down-> SERVICE : confirmer(candidature)
+SERVICE -right-> REGLES : appliquer les règles
+SERVICE -down-> REPO : lire / enregistrer\n(transaction atomique)
+REPO -down-> DB : accès aux données
+
+note right of REGLES
+  Contrôles principaux :
+  • candidature favorable ;
+  • groupe entièrement confirmé ;
+  • capacité de l'enseignant
+    exprimée en nombre de PFA ;
+  • aucun étudiant déjà affecté ;
+  • sujet encore attribuable.
+end note
+
+note right of REPO
+  Risque technique UC06 :
+  empêcher deux validations
+  concurrentes incompatibles.
+  Mécanisme envisagé :
+  transaction + contraintes
+  d'intégrité en base.
+end note
+
+footer Conception proposée — aucune implémentation ni aucun test exécuté
+@enduml
