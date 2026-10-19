@@ -1,0 +1,85 @@
+@startuml
+!theme plain
+title PFA — Modèle conceptuel de données (entités et cardinalités)
+left to right direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam linetype ortho
+entity "CAMPAGNE_PFA" as Campagne {
+  * id : UUID <<PK>>
+  --
+  libellé
+  période de candidature
+  taille maximale du groupe
+}
+entity "ENSEIGNANT" as Enseignant {
+  * id : UUID <<PK>>
+  --
+  nom
+}
+entity "QUOTA_ENCADREMENT" as Quota {
+  * campagne_id : UUID <<FK>>
+  * enseignant_id : UUID <<FK>>
+  --
+  quota_pfa
+}
+entity "ÉTUDIANT" as Etudiant {
+  * id : UUID <<PK>>
+  --
+  nom
+}
+entity "GROUPE" as Groupe {
+  * id : UUID <<PK>>
+  --
+  campagne_id : UUID <<FK>>
+}
+entity "MEMBRE_GROUPE" as Membre {
+  * groupe_id : UUID <<FK>>
+  * etudiant_id : UUID <<FK>>
+  --
+  rôle
+  confirmation
+}
+entity "PROJET_PFA" as Projet {
+  * id : UUID <<PK>>
+  --
+  campagne_id : UUID <<FK>>
+  origine : ENSEIGNANT / ETUDIANT
+  auteur_enseignant_id : UUID [0..1]
+  auteur_groupe_id : UUID [0..1]
+}
+entity "CANDIDATURE" as Cand {
+  * id : UUID <<PK>>
+  --
+  groupe_id : UUID <<FK>>
+  projet_id : UUID <<FK>>
+  enseignant_id : UUID <<FK>>
+  statut
+}
+entity "AFFECTATION" as Affect {
+  * id : UUID <<PK>>
+  --
+  candidature_id : UUID <<FK, UNIQUE>>
+  enseignant_id : UUID <<FK>>
+  campagne_id : UUID <<FK>>
+}
+entity "AFFECTATION_MEMBRE" as AM {
+  * campagne_id : UUID <<UNIQUE>>
+  * etudiant_id : UUID <<UNIQUE>>
+  --
+  affectation_id : UUID <<FK>>
+}
+Campagne ||--o{ Quota
+Enseignant ||--o{ Quota
+Campagne ||--o{ Groupe
+Campagne ||--o{ Projet
+Groupe ||--|{ Membre
+Etudiant ||--o{ Membre
+Groupe ||--o{ Cand
+Projet ||--o{ Cand
+Enseignant ||--o{ Cand
+Cand ||--o| Affect
+Enseignant ||--o{ Affect
+Affect ||--|{ AM
+Etudiant ||--o{ AM
+@enduml
