@@ -1,0 +1,66 @@
+@startuml
+' PFA — UC06 : Valider l'affectation d'un PFA
+' Diagramme d'activité : conception, sans implémentation
+!theme plain
+title UC06 — Vérification et validation d'une affectation
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam ActivityBackgroundColor #F5F8F7
+skinparam ActivityBorderColor #526C67
+skinparam ActivityDiamondBackgroundColor #FAF4F0
+skinparam ActivityDiamondBorderColor #AF7C67
+skinparam ArrowColor #566663
+
+start
+:Enseignant demande la confirmation;
+:Ouvrir une transaction et acquérir\nles verrous pertinents;
+:Charger la candidature, le groupe,\nle sujet et le quota;
+
+if (Candidature favorable ?) then (oui)
+else (non)
+  :Refuser : candidature non éligible;
+  :ROLLBACK;
+  stop
+endif
+
+if (Tous les membres confirmés ?) then (oui)
+else (non)
+  :Refuser : groupe non confirmé;
+  :ROLLBACK;
+  stop
+endif
+
+if (Capacité PFA disponible ?) then (oui)
+else (non)
+  :Refuser : quota atteint;
+  :ROLLBACK;
+  stop
+endif
+
+if (Sujet encore attribuable ?) then (oui)
+else (non)
+  :Refuser : sujet indisponible;
+  :ROLLBACK;
+  stop
+endif
+
+if (Aucun membre déjà affecté ?) then (oui)
+else (non)
+  :Refuser : double affectation;
+  :ROLLBACK;
+  stop
+endif
+
+:Enregistrer l'affectation ET ses membres\ndans la même transaction;
+if (Opération atomique acceptée\npar la base ?) then (oui)
+  :COMMIT;
+  :Notifier la confirmation;
+else (non)
+  :ROLLBACK;
+  :Refuser : conflit d'intégrité ou de concurrence;
+endif
+stop
+
+footer Le quota est exprimé en nombre de PFA, jamais en nombre d'étudiants.
+@enduml
