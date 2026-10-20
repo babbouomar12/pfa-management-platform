@@ -1,0 +1,73 @@
+name: FastAPI CI
+
+on:
+  push:
+    branches:
+      - migration/fastapi
+      - main
+    paths:
+      - "backend-fastapi/**"
+      - ".github/workflows/fastapi-ci.yml"
+
+  pull_request:
+    paths:
+      - "backend-fastapi/**"
+      - ".github/workflows/fastapi-ci.yml"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: pfa
+          POSTGRES_PASSWORD: pfa
+          POSTGRES_DB: pfa_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pfa -d pfa_test_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: backend-fastapi
+
+    env:
+      DATABASE_URL: postgresql+psycopg://pfa:pfa@localhost:5432/pfa_test_db
+      RUN_PFA_DB_TESTS: "1"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Initialize PostgreSQL schema
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          import psycopg
+
+          url = os.environ["DATABASE_URL"].replace(
+              "postgresql+psycopg://", "postgresql://", 1
+          )
+          schema = Path("database/01_schema.sql").read_text(encoding="utf-8")
+
+          with psycopg.connect(url, autocommit=True) as conn:
+              conn.execute(schema)
+          PY
+
+      - name: Run all tests
+        run: python -m pytest -v -rs
