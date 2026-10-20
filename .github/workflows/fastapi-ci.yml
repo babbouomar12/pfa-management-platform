@@ -1,0 +1,20 @@
+name: FastAPI CI
+on:
+  push:
+    branches: [migration/fastapi]
+    paths: ['"'"'backend-fastapi/**'"'"', '"'"'.github/workflows/fastapi-ci.yml'"'"']
+  pull_request:
+    paths: ['"'"'backend-fastapi/**'"'"', '"'"'.github/workflows/fastapi-ci.yml'"'"']
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend-fastapi
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '"'"'3.12'"'"'
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pytest -q

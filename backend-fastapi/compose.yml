@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pfa_db
+      POSTGRES_USER: pfa
+      POSTGRES_PASSWORD: pfa
+    ports:
+      - "5433:5432"
+    volumes:
+      - pfa_python_pgdata:/var/lib/postgresql/data
+      - ./database/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./database/02_seed_demo.sql:/docker-entrypoint-initdb.d/02_seed_demo.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pfa -d pfa_db"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+volumes:
+  pfa_python_pgdata:
