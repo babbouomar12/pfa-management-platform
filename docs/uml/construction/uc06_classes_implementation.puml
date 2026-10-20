@@ -1,0 +1,91 @@
+@startuml
+!theme plain
+title UC06 — Classes effectivement implémentées (NestJS / TypeORM)
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam shadowing false
+left to right direction
+package "API NestJS" {
+ class AssignmentsController <<controller>> {
+  +confirm(body: ConfirmAssignmentDto)
+ }
+ class ConfirmAssignmentDto <<DTO>> {
+  +applicationId: UUID
+ }
+ class AssignmentsService <<service>> {
+  +confirm(applicationId: UUID): Promise<ConfirmedAssignment>
+ }
+ class "assignment-policy" as Policy <<utility>> {
+  +capacityReached(currentPfa, maxPfa): boolean
+  +allMembersConfirmed(members): boolean
+ }
+}
+package "Persistance TypeORM" {
+ class DataSource <<TypeORM>>
+ class Application <<entity>> {
+  +id: UUID
+  +campaignId: UUID
+  +teacherId: UUID
+  +groupId: UUID
+  +subjectId: UUID [0..1]
+  +status: ApplicationStatus
+ }
+ class TeacherCapacity <<entity>> {
+  +teacherId: UUID
+  +campaignId: UUID
+  +maxPfa: int
+ }
+ class PfaGroup <<entity>> {
+  +id: UUID
+  +campaignId: UUID
+ }
+ class GroupMember <<entity>> {
+  +groupId: UUID
+  +studentId: UUID
+  +confirmedAt: DateTime [0..1]
+ }
+ class Student <<entity>>
+ class Subject <<entity>> {
+  +id: UUID
+  +isAvailable: boolean
+ }
+ class Assignment <<entity>> {
+  +id: UUID
+  +applicationId: UUID
+  +campaignId: UUID
+  +teacherId: UUID
+  +groupId: UUID
+  +subjectId: UUID [0..1]
+ }
+ class AssignmentMember <<entity>> {
+  +assignmentId: UUID
+  +campaignId: UUID
+  +studentId: UUID
+ }
+}
+AssignmentsController --> ConfirmAssignmentDto
+AssignmentsController --> AssignmentsService
+AssignmentsService --> DataSource : transaction READ COMMITTED
+AssignmentsService ..> Policy : valide
+DataSource ..> Application
+DataSource ..> TeacherCapacity
+DataSource ..> PfaGroup
+DataSource ..> GroupMember
+DataSource ..> Student
+DataSource ..> Subject
+DataSource ..> Assignment
+DataSource ..> AssignmentMember
+PfaGroup "1" -- "0..*" GroupMember
+Application "1" --> "1" PfaGroup
+Application "1" --> "0..1" Subject
+Assignment "1" -- "1..*" AssignmentMember
+note right of AssignmentMember
+Contrainte UNIQUE(campaign_id, student_id)
+Empêche la double affectation par campagne.
+end note
+note right of TeacherCapacity
+Verrou pessimiste par enseignant / campagne
+Quota exprimé en nombre de PFA.
+end note
+footer Source : backend/src, version fournie dans pfa-management-platform.zip
+@enduml
