@@ -1,0 +1,46 @@
+name: UC06 - Build et tests
+
+on:
+  push:
+    branches: [main, feature/uc06-affectation]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+      - name: Configurer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Installer les dépendances
+        run: npm install --no-audit --no-fund
+      - name: Démarrer PostgreSQL et initialiser le schéma
+        run: |
+          docker compose up -d db
+          for i in {1..40}; do
+            if docker compose exec -T db pg_isready -U pfa -d pfa_db; then break; fi
+            sleep 2
+          done
+          docker compose exec -T db pg_isready -U pfa -d pfa_db
+      - name: Compiler le projet
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://pfa:pfa@localhost:5432/pfa_db
+      - name: Tests unitaires
+        run: npm test
+        env:
+          DATABASE_URL: postgresql://pfa:pfa@localhost:5432/pfa_db
+      - name: Tests d'intégration
+        run: npm run test:e2e
+        env:
+          DATABASE_URL: postgresql://pfa:pfa@localhost:5432/pfa_db
+      - name: Arrêter PostgreSQL
+        if: always()
+        run: docker compose down -v

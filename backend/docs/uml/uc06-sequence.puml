@@ -1,0 +1,28 @@
+@startuml
+title UC06 - Validation transactionnelle d'une affectation
+skinparam shadowing false
+actor Enseignant
+boundary "AssignmentsController" as Controller
+control "AssignmentsService" as Service
+database "PostgreSQL / TypeORM" as DB
+
+Enseignant -> Controller : POST /api/assignments/confirm\n{applicationId}
+Controller -> Service : confirm(applicationId)
+Service -> DB : BEGIN
+Service -> DB : Lire candidature
+Service -> DB : SELECT capacité FOR UPDATE
+Service -> DB : Verrouiller candidature et étudiants
+Service -> DB : Contrôler statut, groupe, sujet,\ncapacité et doubles affectations
+alt Toutes les règles sont respectées
+  Service -> DB : INSERT affectation
+  Service -> DB : INSERT membres affectés
+  Service -> DB : UPDATE candidature = AFFECTEE
+  Service -> DB : COMMIT
+  Service --> Controller : Affectation confirmée
+  Controller --> Enseignant : HTTP 201
+else Contrainte violée
+  Service -> DB : ROLLBACK
+  Service --> Controller : ConflictException
+  Controller --> Enseignant : HTTP 409
+end
+@enduml

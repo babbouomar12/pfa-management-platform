@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="910" height="738" viewBox="0 0 910 738">
+<rect width="100%" height="100%" fill="white"/>
+<style>text{font-family:Arial, sans-serif; fill:#1F2937}</style>
+<defs><marker id="arr" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M 0 0 L 7 3 L 0 6 z" fill="#64748b"/></marker></defs>
+<text x="455" y="41" font-size="24" font-weight="bold" text-anchor="middle">UC06 — ARCHITECTURE TECHNIQUE EXÉCUTABLE</text>
+<rect x="202" y="82" width="500" height="86" rx="12" stroke="#334155" stroke-width="1.5" fill="#F8FAFC"/>
+<text x="452" y="116" font-size="20" font-weight="bold" text-anchor="middle">Client HTTP</text>
+<text x="452" y="143" font-size="14" text-anchor="middle" fill="#475569">POST /api/assignments/confirm</text>
+<path d="M 452 168 V 194" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+<rect x="202" y="198" width="500" height="86" rx="12" stroke="#334155" stroke-width="1.5" fill="#F8FAFC"/>
+<text x="452" y="232" font-size="20" font-weight="bold" text-anchor="middle">NestJS — AssignmentsController</text>
+<text x="452" y="259" font-size="14" text-anchor="middle" fill="#475569">Validation du DTO applicationId (UUID)</text>
+<path d="M 452 284 V 310" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+<rect x="202" y="314" width="500" height="86" rx="12" stroke="#334155" stroke-width="1.5" fill="#EFF6F3"/>
+<text x="452" y="348" font-size="20" font-weight="bold" text-anchor="middle">NestJS — AssignmentsService</text>
+<text x="452" y="375" font-size="14" text-anchor="middle" fill="#475569">Règles métier et orchestration transactionnelle</text>
+<path d="M 452 400 V 426" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+<rect x="202" y="430" width="500" height="86" rx="12" stroke="#334155" stroke-width="1.5" fill="#F8FAFC"/>
+<text x="452" y="464" font-size="20" font-weight="bold" text-anchor="middle">TypeORM — EntityManager</text>
+<text x="452" y="491" font-size="14" text-anchor="middle" fill="#475569">Transaction READ COMMITTED et verrous FOR UPDATE</text>
+<path d="M 452 516 V 542" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+<rect x="202" y="546" width="500" height="86" rx="12" stroke="#334155" stroke-width="1.5" fill="#F8FAFC"/>
+<text x="452" y="580" font-size="20" font-weight="bold" text-anchor="middle">PostgreSQL 16</text>
+<text x="452" y="607" font-size="14" text-anchor="middle" fill="#475569">Persistances atomiques et contraintes UNIQUE</text>
+<text x="455" y="692" font-size="15" text-anchor="middle">Risque traité : validations concurrentes, quota et double affectation</text>
+</svg>
