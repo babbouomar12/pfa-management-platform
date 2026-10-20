@@ -1,0 +1,26 @@
+@startuml
+title UC06 - Modèle de données minimal
+hide methods
+skinparam shadowing false
+class Campaign { +id: UUID\n+title: string }
+class Teacher { +id: UUID\n+name: string }
+class TeacherCapacity { +teacherId: UUID\n+campaignId: UUID\n+maxPfa: int }
+class Student { +id: UUID\n+name: string }
+class PfaGroup { +id: UUID\n+campaignId: UUID }
+class GroupMember { +groupId: UUID\n+studentId: UUID\n+confirmedAt: datetime? }
+class Subject { +id: UUID\n+teacherId: UUID\n+campaignId: UUID }
+class Application { +id: UUID\n+groupId: UUID\n+teacherId: UUID\n+campaignId: UUID\n+subjectId: UUID?\n+status: string }
+class Assignment { +id: UUID\n+applicationId: UUID\n+teacherId: UUID\n+campaignId: UUID }
+class AssignmentMember { +assignmentId: UUID\n+studentId: UUID\n+campaignId: UUID }
+Teacher "1" -- "*" TeacherCapacity
+Campaign "1" -- "*" TeacherCapacity
+Campaign "1" -- "*" PfaGroup
+PfaGroup "1" -- "1..*" GroupMember
+Student "1" -- "*" GroupMember
+Teacher "1" -- "*" Application
+PfaGroup "1" -- "*" Application
+Subject "0..1" -- "*" Application
+Application "1" -- "0..1" Assignment
+Assignment "1" -- "1..*" AssignmentMember
+Student "1" -- "*" AssignmentMember
+@enduml
