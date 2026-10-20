@@ -1,0 +1,63 @@
+@startuml
+!theme plain
+title UC06 — Séquence réelle de confirmation (code NestJS)
+autonumber
+hide footbox
+actor Enseignant as Actor
+boundary "HTTP API" as API
+control "AssignmentsController" as Ctrl
+control "AssignmentsService" as Svc
+participant "TypeORM EntityManager" as ORM
+database "PostgreSQL" as DB
+Actor -> API : POST /api/assignments/confirm
+{applicationId}
+API -> API : ValidationPipe / IsUUID('4')
+alt DTO invalide
+ API --> Actor : 400 Bad Request
+else DTO valide
+ API -> Ctrl : confirm(dto)
+ Ctrl -> Svc : confirm(applicationId)
+ activate Svc
+ Svc -> ORM : transaction(READ COMMITTED)
+ ORM -> DB : BEGIN
+ Svc -> ORM : lire candidature préliminaire
+ ORM -> DB : SELECT application
+ Svc -> ORM : verrouiller quota enseignant/campagne
+ ORM -> DB : SELECT teacher_capacities FOR UPDATE
+ Svc -> ORM : relire/verrouiller candidature
+ ORM -> DB : SELECT applications FOR UPDATE
+ Svc -> ORM : charger groupe et membres
+ ORM -> DB : SELECT pfa_groups, group_members
+ Svc -> Svc : allMembersConfirmed(members)
+ loop Étudiants triés par identifiant
+  Svc -> ORM : verrouiller étudiant
+  ORM -> DB : SELECT students FOR UPDATE
+ end
+ Svc -> ORM : vérifier sujet (si présent), quota et affectations
+ ORM -> DB : SELECT subjects, assignments, assignment_members
+ Svc -> Svc : capacityReached(count, maxPfa)
+ alt Candidature favorable, groupe valide, quota et unicité OK
+  Svc -> ORM : INSERT assignment
+  ORM -> DB : INSERT assignments
+  Svc -> ORM : INSERT assignment_members
+  ORM -> DB : INSERT assignment_members
+  Svc -> ORM : UPDATE application status = AFFECTEE
+  ORM -> DB : UPDATE applications
+  ORM -> DB : COMMIT
+  ORM --> Svc : ConfirmedAssignment
+  Svc --> Ctrl : confirmation
+  Ctrl --> Actor : 201 Created
+ else Règle métier violée / conflit
+  Svc --> ORM : exception
+  ORM -> DB : ROLLBACK
+  Svc --> Ctrl : ConflictException / NotFoundException
+  Ctrl --> Actor : 409 Conflict / 404 Not Found
+ end
+ deactivate Svc
+end
+note over DB
+Contraintes UNIQUE pour candidature, sujet non nul
+et couple (campagne, étudiant).
+end note
+footer Source : assignments.controller.ts et assignments.service.ts (archive fournie)
+@enduml

@@ -1,0 +1,92 @@
+@startuml
+!theme plain
+title PFA — Diagramme de classes métier (conception proposée)
+left to right direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam defaultFontName Arial
+hide empty methods
+
+class CampagnePFA {
+  +id: UUID
+  +libelle: String
+  +debutCandidatures: Date
+  +finCandidatures: Date
+  +tailleMaxGroupe: Integer
+  +statut: StatutCampagne
+}
+class Enseignant {
+  +id: UUID
+  +nom: String
+}
+class CapaciteEncadrement {
+  +quotaPFA: Integer
+}
+class Etudiant {
+  +id: UUID
+  +nom: String
+}
+class Groupe {
+  +id: UUID
+  +nom: String
+  +statut: StatutGroupe
+}
+class MembreGroupe {
+  +role: RoleMembre
+  +confirmation: Boolean
+}
+class ProjetPFA {
+  +id: UUID
+  +titre: String
+  +origine: OrigineProjet
+  +modalite: ModaliteProjet
+  +statut: StatutProjet
+}
+class Candidature {
+  +id: UUID
+  +dateSoumission: DateTime
+  +statut: StatutCandidature
+  +motifRefus: String [0..1]
+}
+class Affectation {
+  +id: UUID
+  +dateConfirmation: DateTime
+  +statut: StatutAffectation
+}
+class AffectationMembre {
+  +campagneId: UUID
+  +etudiantId: UUID
+}
+
+CampagnePFA "1" -- "0..*" Groupe : accueille
+CampagnePFA "1" -- "0..*" ProjetPFA : recense
+CampagnePFA "1" -- "0..*" CapaciteEncadrement : définit
+Enseignant "1" -- "0..*" CapaciteEncadrement : possède
+Groupe "1" -- "1..*" MembreGroupe : est composé de
+Etudiant "1" -- "0..*" MembreGroupe : adhère à
+Groupe "1" -- "0..*" Candidature : dépose
+ProjetPFA "1" -- "0..*" Candidature : concerne
+Enseignant "1" -- "0..*" Candidature : examine
+Candidature "1" -- "0..1" Affectation : donne lieu à
+Enseignant "1" -- "0..*" Affectation : encadre
+Affectation "1" -- "1..*" AffectationMembre : concerne
+Etudiant "1" -- "0..*" AffectationMembre : reçoit
+Enseignant "0..1" -- "0..*" ProjetPFA : auteur enseignant
+Groupe "0..1" -- "0..*" ProjetPFA : auteur étudiant
+
+note bottom of ProjetPFA
+  Origine = ENSEIGNANT : auteur = Enseignant.
+  Origine = ETUDIANT : auteur = Groupe.
+  Exactement un type d'auteur est présent.
+end note
+note bottom of AffectationMembre
+  Unicité de (campagneId, etudiantId).
+  Toute affectation lie tous les membres.
+end note
+note bottom of CapaciteEncadrement
+  Un quota par couple (campagne, enseignant).
+  Mesure : nombre de PFA, pas d'étudiants.
+end note
+@enduml

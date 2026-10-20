@@ -1,0 +1,37 @@
+@startuml
+' Deux parcours — plateforme PFA
+!theme plain
+title PFA — Deux parcours vers la candidature
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam ActivityBackgroundColor #F4F7F6
+skinparam ActivityBorderColor #536C66
+skinparam ActivityDiamondBackgroundColor #F9F4F0
+skinparam ActivityDiamondBorderColor #A57867
+
+start
+:Étudiant choisit le mode de candidature;
+if (Origine du sujet ?) then (Sujet publié)
+  :Consulter les sujets proposés\npar les enseignants (UC02 / UC04);
+  :Sélectionner un sujet disponible;
+else (Proposition personnelle)
+  :Décrire son projet (UC03);
+  :Choisir un enseignant sollicité;
+endif
+:Constituer un groupe de 1 à N étudiants;
+:Obtenir la confirmation des membres;
+:Déposer la candidature;
+:Enseignant examine le dossier (UC05);
+if (Décision favorable ?) then (oui)
+  :Soumettre à la validation UC06;
+  if (Contraintes d'affectation respectées ?) then (oui)
+    :Affectation définitive confirmée;
+  else (non)
+    :Pas d'affectation définitive;
+  endif
+else (non)
+  :Candidature refusée ou en attente;
+endif
+stop
+@enduml

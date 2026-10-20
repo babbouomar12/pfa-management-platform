@@ -1,0 +1,38 @@
+@startuml
+!theme plain
+title Plateforme de gestion des PFA — Cas d'utilisation
+left to right direction
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam usecaseBackgroundColor #F6F8F7
+skinparam usecaseBorderColor #52665E
+
+actor "Étudiant" as ETU
+actor "Enseignant" as ENS
+actor "Administration" as ADM
+
+rectangle "Plateforme de gestion des PFA" {
+  usecase "UC01\nGérer une campagne PFA" as UC01
+  usecase "UC02\nPublier et gérer les sujets" as UC02
+  usecase "UC03\nProposer un projet personnel" as UC03
+  usecase "UC04\nConsulter les sujets et candidater" as UC04
+  usecase "UC05\nExaminer et traiter les candidatures" as UC05
+  usecase "UC06\nValider une affectation" as UC06
+}
+ADM -- UC01
+ENS -- UC02
+ENS -- UC05
+ENS -- UC06
+ETU -- UC03
+ETU -- UC04
+
+note bottom of UC03
+Proposition individuelle ou collective.
+L'individuel est modélisé par un groupe de 1.
+end note
+note bottom of UC06
+UC à risque : quotas et concurrence.
+end note
+@enduml

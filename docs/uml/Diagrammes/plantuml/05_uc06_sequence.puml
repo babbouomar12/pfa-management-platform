@@ -1,0 +1,99 @@
+@startuml
+' INSAT — Processus unifié et approches agiles
+' PFA — UC06 : Valider l'affectation d'un PFA
+' Diagramme de séquence : conception, sans implémentation
+
+!theme plain
+title UC06 — Confirmation d'une affectation (séquence conceptuelle)
+autonumber
+hide footbox
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam DefaultFontSize 12
+skinparam ArrowColor #465656
+skinparam SequenceLifeLineBorderColor #A8B8B4
+skinparam SequenceLifeLineBackgroundColor #F7F9F8
+skinparam ParticipantBorderColor #465656
+skinparam ParticipantBackgroundColor #F7F9F8
+skinparam ParticipantFontColor #243130
+skinparam ActorBorderColor #465656
+skinparam SequenceGroupBorderColor #8DA7A1
+skinparam SequenceGroupBackgroundColor #F6F9F7
+skinparam NoteBackgroundColor #FAF6EF
+skinparam NoteBorderColor #B9A48D
+
+actor "Enseignant" as ENS
+boundary "Interface" as UI
+control "AffectationController" as CTRL
+control "AffectationService" as SVC
+entity "AffectationRepository" as REPO
+database "Base relationnelle" as DB
+
+ENS -> UI : demander confirmation\n(candidatureId)
+UI -> CTRL : POST /affectations/confirmer
+CTRL -> SVC : confirmer(candidatureId, enseignantId)
+activate SVC
+
+note over SVC, REPO
+Une décision FAVORABLE de l'UC05 n'est pas
+une affectation définitive. Les règles de
+l'UC06 sont vérifiées à la confirmation.
+end note
+
+group Transaction de confirmation
+    SVC -> REPO : démarrer transaction
+    activate REPO
+    REPO -> DB : BEGIN
+    REPO -> DB : verrouiller quota de l'enseignant
+    REPO -> DB : verrouiller les étudiants du groupe\n(dans un ordre déterministe)
+    REPO --> SVC : verrous acquis
+
+    SVC -> REPO : charger candidature, membres,\nsujet, quota et affectations existantes
+    REPO -> DB : SELECT des données utiles
+    DB --> REPO : dossier et état courant
+    REPO --> SVC : contexte cohérent
+
+    note right of SVC
+    Contrôles métier :
+    - candidature favorable ;
+    - membres tous confirmés ;
+    - quota en nombre de PFA ;
+    - aucun membre déjà affecté ;
+    - sujet encore attribuable.
+    end note
+
+    alt Toutes les règles sont respectées
+        SVC -> REPO : créer affectation + liens membres
+        REPO -> DB : INSERT affectation\n+ INSERT affectation_membre
+        note right of DB
+        Unicité de (campagneId, etudiantId)
+        pour éviter une double affectation.
+        end note
+        DB --> REPO : opérations acceptées
+        SVC -> REPO : valider la transaction
+        REPO -> DB : COMMIT
+        DB --> REPO : succès
+        REPO --> SVC : affectation confirmée
+    else Règle violée ou conflit concurrent
+        SVC -> REPO : annuler la transaction
+        REPO -> DB : ROLLBACK
+        DB --> REPO : aucune écriture conservée
+        REPO --> SVC : refus explicite
+    end
+    deactivate REPO
+end
+
+alt Affectation confirmée
+    SVC --> CTRL : confirmation
+    CTRL --> UI : 201 — affectation créée
+    UI --> ENS : afficher la confirmation
+else Affectation refusée
+    SVC --> CTRL : erreur métier / conflit
+    CTRL --> UI : 409 — conflit ou quota atteint
+    UI --> ENS : afficher la raison du refus
+end
+deactivate SVC
+
+footer Conception proposée : les transactions et les contrôles ne sont pas encore implémentés.
+@enduml
