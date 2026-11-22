@@ -10,7 +10,7 @@
 <title>CycleY</title>
 <polygon fill="white" stroke="none" points="-25.2,25.2 -25.2,-817.4 763.8,-817.4 763.8,25.2 -25.2,25.2"/>
 <text xml:space="preserve" text-anchor="middle" x="369.3" y="-768.25" font-family="Arial" font-size="21.00">PLATEFORME PFA — CYCLE EN Y (2TUP)</text>
-<text xml:space="preserve" text-anchor="middle" x="369.3" y="-744.25" font-family="Arial" font-size="21.00">Livrables observés au commit daa557f · état documentaire</text>
+<text xml:space="preserve" text-anchor="middle" x="369.3" y="-744.25" font-family="Arial" font-size="21.00">TP1 · code, livrables et preuves vérifiés le 22 novembre 2026</text>
 <!-- functional -->
 <g id="node1" class="node">
 <title>functional</title>
@@ -24,8 +24,8 @@
 <path fill="#f4f6f8" stroke="#536273" d="M333.6,-644.6C333.6,-644.6 12,-644.6 12,-644.6 6,-644.6 0,-638.6 0,-632.6 0,-632.6 0,-575 0,-575 0,-569 6,-563 12,-563 12,-563 333.6,-563 333.6,-563 339.6,-563 345.6,-569 345.6,-575 345.6,-575 345.6,-632.6 345.6,-632.6 345.6,-638.6 339.6,-644.6 333.6,-644.6"/>
 <text xml:space="preserve" text-anchor="middle" x="172.8" y="-621.45" font-family="Arial" font-size="13.00">VISION ET BESOINS</text>
 <text xml:space="preserve" text-anchor="middle" x="172.8" y="-606.45" font-family="Arial" font-size="13.00">Gérer les PFA, candidatures et affectations</text>
-<text xml:space="preserve" text-anchor="middle" x="172.8" y="-591.45" font-family="Arial" font-size="13.00">Vision synthétisée dans le README</text>
-<text xml:space="preserve" text-anchor="middle" x="172.8" y="-576.45" font-family="Arial" font-size="13.00">Pas de document autonome retrouvé</text>
+<text xml:space="preserve" text-anchor="middle" x="172.8" y="-591.45" font-family="Arial" font-size="13.00">Vision en cinq lignes et acteurs</text>
+<text xml:space="preserve" text-anchor="middle" x="172.8" y="-576.45" font-family="Arial" font-size="13.00">README et rapport TP1 / 2TUP</text>
 </g>
 <!-- functional&#45;&gt;vision -->
 <g id="edge1" class="edge">
@@ -92,7 +92,7 @@
 <text xml:space="preserve" text-anchor="middle" x="368.8" y="-378.25" font-family="Arial" font-size="13.00">FUSION DES DEUX BRANCHES</text>
 <text xml:space="preserve" text-anchor="middle" x="368.8" y="-363.25" font-family="Arial" font-size="13.00">Conception détaillée d&#39;UC06</text>
 <text xml:space="preserve" text-anchor="middle" x="368.8" y="-348.25" font-family="Arial" font-size="13.00">Règles métier + transactions + contraintes SQL</text>
-<text xml:space="preserve" text-anchor="middle" x="368.8" y="-333.25" font-family="Arial" font-size="13.00">Diagrammes de classes et de séquence (NestJS)</text>
+<text xml:space="preserve" text-anchor="middle" x="368.8" y="-333.25" font-family="Arial" font-size="13.00">Fiche UC et diagrammes FastAPI / NestJS</text>
 </g>
 <!-- usecases&#45;&gt;fusion -->
 <g id="edge5" class="edge">
@@ -124,9 +124,9 @@
 <g id="node9" class="node">
 <title>tests</title>
 <path fill="#f4f6f8" stroke="#536273" d="M572.8,-173.2C572.8,-173.2 164.8,-173.2 164.8,-173.2 158.8,-173.2 152.8,-167.2 152.8,-161.2 152.8,-161.2 152.8,-118.6 152.8,-118.6 152.8,-112.6 158.8,-106.6 164.8,-106.6 164.8,-106.6 572.8,-106.6 572.8,-106.6 578.8,-106.6 584.8,-112.6 584.8,-118.6 584.8,-118.6 584.8,-161.2 584.8,-161.2 584.8,-167.2 578.8,-173.2 572.8,-173.2"/>
-<text xml:space="preserve" text-anchor="middle" x="368.8" y="-150.05" font-family="Arial" font-size="13.00">INTÉGRATION ET TESTS — PRÉSENTS</text>
-<text xml:space="preserve" text-anchor="middle" x="368.8" y="-135.05" font-family="Arial" font-size="13.00">Tests métier, HTTP et concurrence ; workflows CI</text>
-<text xml:space="preserve" text-anchor="middle" x="368.8" y="-120.05" font-family="Arial" font-size="13.00">Résultats non vérifiés lors de cette rédaction</text>
+<text xml:space="preserve" text-anchor="middle" x="368.8" y="-150.05" font-family="Arial" font-size="13.00">INTÉGRATION ET TESTS — CI VÉRIFIÉE</text>
+<text xml:space="preserve" text-anchor="middle" x="368.8" y="-135.05" font-family="Arial" font-size="13.00">13 tests FastAPI (daa557f), 9 tests NestJS (d54cb2c)</text>
+<text xml:space="preserve" text-anchor="middle" x="368.8" y="-120.05" font-family="Arial" font-size="13.00">Tests métier, HTTP et concurrence</text>
 </g>
 <!-- implementation&#45;&gt;tests -->
 <g id="edge8" class="edge">

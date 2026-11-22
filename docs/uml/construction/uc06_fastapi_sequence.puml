@@ -1,0 +1,67 @@
+@startuml
+title UC06 — Confirmation transactionnelle (FastAPI)
+hide footbox
+autonumber
+skinparam shadowing false
+actor "Enseignant / client de démonstration" as Client
+boundary "FastAPI + ConfirmRequest" as API
+control "app.main.confirm" as Main
+control "app.service.confirm_assignment" as Service
+participant "SQLAlchemy Engine / Connection" as SQL
+database PostgreSQL as DB
+
+Client -> API : POST /api/assignments/confirm\n{applicationId}
+API -> API : Valider UUID et champs autorisés
+alt Corps invalide
+  API --> Client : 422
+else Corps valide
+  API -> Main : confirm(payload)
+  Main -> Main : get_engine()
+  Main -> Service : confirm_assignment(engine, applicationId)
+  Service -> SQL : entrer dans engine.begin()
+  SQL -> DB : BEGIN
+  group Parcours nominal (interrompu dès un contrôle en échec)
+    Service -> SQL : lire teacher_id et campaign_id de la candidature
+    SQL -> DB : SELECT applications
+    Service -> SQL : verrouiller la capacité
+    SQL -> DB : SELECT teacher_capacities FOR UPDATE
+    Service -> SQL : relire et verrouiller la candidature
+    SQL -> DB : SELECT applications FOR UPDATE
+    Service -> Service : contrôler cohérence et statut FAVORABLE
+    Service -> SQL : charger groupe et membres triés
+    SQL -> DB : SELECT pfa_groups, group_members
+    Service -> Service : all_members_confirmed(members)
+    loop Étudiants par ordre d'identifiant
+      Service -> SQL : verrouiller l'étudiant
+      SQL -> DB : SELECT students FOR UPDATE
+    end
+    opt subject_id non nul
+      Service -> SQL : vérifier sujet disponible, cohérent et non attribué
+      SQL -> DB : SELECT subjects, assignments
+    end
+    Service -> SQL : compter les PFA du couple enseignant/campagne
+    SQL -> DB : SELECT count(*) FROM assignments
+    Service -> Service : capacity_reached(count, max_pfa)
+    Service -> SQL : rechercher les affectations des étudiants
+    SQL -> DB : SELECT assignment_members
+  end
+  alt Contrôles valides et écritures réussies
+    Service -> SQL : insérer affectation et tous les membres
+    SQL -> DB : INSERT assignments, assignment_members
+    Service -> SQL : passer la candidature à AFFECTEE
+    SQL -> DB : UPDATE applications
+    SQL -> DB : COMMIT à la sortie du contexte
+    Service --> Main : dictionnaire de confirmation
+    Main --> Client : 201, identifiants et status = AFFECTEE
+  else Candidature absente / règle violée / conflit SQL reconnu
+    SQL -> DB : ROLLBACK à la sortie sur exception
+    Service --> Main : AssignmentError (404 ou 409)
+    Main --> Client : HTTPException 404 ou 409
+  end
+end
+note over API,Main
+Pas d'authentification ni d'autorisation dans ce prototype.
+Les autres erreurs techniques ne sont pas toutes converties en 409.
+end note
+footer Source : backend-fastapi/app/main.py et app/service.py
+@enduml

@@ -1,5 +1,7 @@
 # UC06 — Traçabilité de Construction
 
+> **Document historique de la réalisation NestJS.** Pour l’état vérifié le 22 novembre 2026, consulter le [rapport TP1/2TUP](../../TP1_PROCESSUS_UNIFIE_2TUP.md), la [fiche UC06 FastAPI](../../UC06_AFFECTATION.md) et la [note de validation avec preuves CI](../../NOTE_VALIDATION_UC06.md). Les résultats ci-dessous étaient déclaratifs lors de leur rédaction ; les journaux GitHub ont depuis été consultés. La revue croisée reste non effectuée.
+
 **Périmètre contrôlé :** fichiers contenus dans `pfa-management-platform.zip`, comparés aux résultats de tests transmis dans la conversation. La réussite de CI est déclarée par l’utilisateur, et non vérifiée indépendamment depuis GitHub.
 
 | Étape | Preuve / fichier |

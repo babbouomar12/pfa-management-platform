@@ -1,6 +1,6 @@
 digraph CycleY {
   graph [rankdir=TB, bgcolor="white", pad="0.35", nodesep="0.65", ranksep="0.55",
-    label="PLATEFORME PFA — CYCLE EN Y (2TUP)\nLivrables observés au commit daa557f · état documentaire",
+    label="PLATEFORME PFA — CYCLE EN Y (2TUP)\nTP1 · code, livrables et preuves vérifiés le 22 novembre 2026",
     labelloc=t, fontsize=21, fontname="Arial"];
   node [shape=box, style="rounded,filled", fillcolor="#F4F6F8", color="#536273",
     fontname="Arial", fontsize=13, margin="0.20,0.15", width=4.8];
@@ -10,7 +10,7 @@ digraph CycleY {
   technical [label="BRANCHE TECHNIQUE\nComment réaliser le produit", fillcolor="#E5EFF9"];
   {rank=same; functional; technical;}
 
-  vision [label="VISION ET BESOINS\nGérer les PFA, candidatures et affectations\nVision synthétisée dans le README\nPas de document autonome retrouvé"];
+  vision [label="VISION ET BESOINS\nGérer les PFA, candidatures et affectations\nVision en cinq lignes et acteurs\nREADME et rapport TP1 / 2TUP"];
   constraints [label="CONTRAINTES TECHNIQUES\nConcurrence, atomicité, intégration HTTP\nSécurité à compléter\nPerformance sans mesure publiée"];
   {rank=same; vision; constraints;}
 
@@ -18,10 +18,10 @@ digraph CycleY {
   architecture [label="ARCHITECTURE — PRÉSENTE\nAPI → service transactionnel → PostgreSQL\nPrototype NestJS / TypeORM\nMigration FastAPI / SQLAlchemy"];
   {rank=same; usecases; architecture;}
 
-  fusion [label="FUSION DES DEUX BRANCHES\nConception détaillée d'UC06\nRègles métier + transactions + contraintes SQL\nDiagrammes de classes et de séquence (NestJS)",
+  fusion [label="FUSION DES DEUX BRANCHES\nConception détaillée d'UC06\nRègles métier + transactions + contraintes SQL\nFiche UC et diagrammes FastAPI / NestJS",
     fillcolor="#D9E9F5", color="#285879", penwidth=2, width=6.0];
   implementation [label="RÉALISATION — CODE PRÉSENT\nPOST /api/assignments/confirm\nContrôles, verrous et écritures atomiques", width=6.0];
-  tests [label="INTÉGRATION ET TESTS — PRÉSENTS\nTests métier, HTTP et concurrence ; workflows CI\nRésultats non vérifiés lors de cette rédaction", width=6.0];
+  tests [label="INTÉGRATION ET TESTS — CI VÉRIFIÉE\n13 tests FastAPI (daa557f), 9 tests NestJS (d54cb2c)\nTests métier, HTTP et concurrence", width=6.0];
   review [label="REVUE CROISÉE — À RÉALISER\nGrille présente ; aucun compte rendu complété\nContrôle transversal, bilan avant validation finale", fillcolor="#FFF3DE", width=6.0];
 
   functional -> vision -> usecases;

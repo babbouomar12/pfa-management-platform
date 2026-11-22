@@ -1,0 +1,70 @@
+@startuml
+allowmixing
+title UC06 — Classes et modules réellement présents (FastAPI)
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam nodesep 50
+skinparam ranksep 65
+set namespaceSeparator none
+top to bottom direction
+
+package "Entrée HTTP : app/main.py" {
+  class ConfirmRequest <<Pydantic BaseModel>> {
+    +applicationId: UUID
+    model_config: extra = forbid
+  }
+  class "app.main" as Main <<module Python>> {
+    +confirm(payload: ConfirmRequest): dict
+    +health(): dict
+  }
+}
+package "Métier : fonctions et exception" {
+  class "app.service" as Service <<module Python>> {
+    +confirm_assignment(engine, application_id): dict
+  }
+  class AssignmentError <<Exception>> {
+    +status_code: int
+    +__init__(message: str, status_code: int = 409)
+  }
+  class "app.policy" as Policy <<module Python>> {
+    +all_members_confirmed(members: list): bool
+    +capacity_reached(current: int, maximum: int): bool
+  }
+}
+package "Accès aux données" {
+  class "app.db" as Db <<module Python>> {
+    +get_engine(): Engine
+  }
+  class Engine <<SQLAlchemy>> {
+    +begin(): transaction context
+  }
+  class Connection <<SQLAlchemy>> {
+    +execute(statement, parameters): Result
+  }
+  database "PostgreSQL 16" as PG
+}
+Main ..> ConfirmRequest : entrée validée
+Main --> Service : appelle
+Main --> Db : obtient l'Engine
+Main ..> AssignmentError : traduit en erreur HTTP
+Service ..> AssignmentError : lève
+Service ..> Policy : contrôle
+Db --> Engine : create_engine
+Service --> Engine : engine.begin()
+Engine --> Connection : fournit dans la transaction
+Service --> Connection : SQL explicite avec text()
+Connection --> PG : verrous et écritures
+
+note bottom of Service
+Transaction, contrôle des quotas et unicité.
+Le service porte aussi les requêtes SQL.
+Pas de repository Python séparé.
+end note
+note bottom of PG
+Tables : applications, pfa_groups, group_members,
+teacher_capacities, students, subjects,
+assignments, assignment_members.
+Ce ne sont pas des classes ORM Python.
+end note
+footer Sources : backend-fastapi/app et database/01_schema.sql
+@enduml
